@@ -1,6 +1,7 @@
 import pygame
 from Soldier import Soldier
 
+
 pygame.init()
 
 #screen parameters
@@ -20,6 +21,7 @@ GRAVITY = 0.75
 #define player action variables
 moving_left = False
 moving_right = False
+shoot = False
 
 #define colours
 BG = (144, 201, 120)
@@ -29,7 +31,11 @@ def draw_bg():
 	screen.fill(BG)
 	pygame.draw.line(screen, RED, (0, 300), (SCREEN_WIDTH, 300))
 
-player = Soldier ('player', 200, 200, 3, 5)
+#create sprite groups
+bullet_group = pygame.sprite.Group()
+
+player = Soldier ('player', 200, 200, 3, 5, 20)
+enemy = Soldier('enemy', 400, 200, 3, 5, 20)
 
 #game loop/events
 run = True
@@ -42,7 +48,17 @@ while run:
     player.update_animation()
     player.draw(screen)
 
+    enemy.update()
+    enemy.draw(screen)
+
+    #update and draw groups
+    bullet_group.update()
+    bullet_group.draw(screen)
+
     if player.alive:
+        #shoot bullets
+        if shoot:
+            player.shoot()
         if player.in_air:
             player.update_action(2)#2: jump
         elif moving_left or moving_right:
@@ -62,6 +78,8 @@ while run:
                 moving_left = True
             if event.key == pygame.K_d:
                 moving_right = True
+            if event.key == pygame.K_SPACE:
+                shoot = True
             if event.key == pygame.K_w and player.alive:
                 player.jump = True
             if event.key == pygame.K_ESCAPE:
@@ -73,6 +91,8 @@ while run:
                 moving_left = False
             if event.key == pygame.K_d:
                 moving_right = False
+            if event.key == pygame.K_SPACE:
+                shoot = False
 
 
     pygame.display.update()

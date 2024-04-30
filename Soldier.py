@@ -1,14 +1,21 @@
 import pygame
 import os
+from Bullet import Bullet
 
 #define game variables
 GRAVITY = 0.75
 
 class Soldier(pygame.sprite.Sprite):
-    def __init__(self, char_type, x, y, scale, speed):
+    def __init__(self, char_type, x, y, scale, speed, ammo):
         pygame.sprite.Sprite.__init__(self)
+        self.alive = True
         self.char_type = char_type
         self.__speed = speed
+        self.ammo = ammo
+        self.start_ammo = ammo
+        self.shoot_cooldown = 0
+        self.health = 100
+        self.max_health = self.health
         self.direction = 1
         self.vel_y = 0
         self.jump = False
@@ -20,7 +27,7 @@ class Soldier(pygame.sprite.Sprite):
         self.update_time = pygame.time.get_ticks()
 
         #load all images for the player
-        animation_types = ['Idle', 'Run', 'Jump']
+        animation_types = ['Idle', 'Run', 'Jump', 'Death']
         for animation in animation_types:
             #reset temporary list of images
             temp_list = []
@@ -35,6 +42,12 @@ class Soldier(pygame.sprite.Sprite):
         self.image = self.animation_list[self.action][self.frame_index]
         self.rect = self.image.get_rect()
         self.rect.center = (x, y)
+
+    def update(self):
+        self.check_alive()
+        #update cooldown
+        if self.shoot_cooldown > 0:
+            self.shoot_cooldown -= 1
 
     def move(self, moving_left, moving_right):
         #reset movement variables
@@ -72,6 +85,13 @@ class Soldier(pygame.sprite.Sprite):
         self.rect.x += dx
         self.rect.y += dy
 
+    def shoot(self):
+        if self.shoot_cooldown == 0 and self.ammo > 0:
+            self.shoot_cooldown = 20
+            bullet = Bullet(self.rect.centerx + (0.6 * self.rect.size[0] * self.direction), self.rect.centery, self.direction)
+            bullet_group.add(bullet)
+            self.ammo -= 1
+
     def update_animation(self):
         #update animation
         ANIMATION_COOLDOWN = 100
@@ -85,6 +105,12 @@ class Soldier(pygame.sprite.Sprite):
         if pygame.time.get_ticks() - self.update_time > ANIMATION_COOLDOWN:
             self.update_time = pygame.time.get_ticks()
             self.frame_index += 1
+        #if the animation has run out then reset back to the start
+        if self.frame_index >= len(self.animation_list[self.action]):
+            if self.action == 3:
+                self.frame_index = len(self.animation_list[self.action]) - 1
+            else:
+                self.frame_index = 0
 
     def update_action(self, new_action):
         #check if the new action is different from before
@@ -93,6 +119,13 @@ class Soldier(pygame.sprite.Sprite):
             #update the animation settings
             self.frame_index_index = 0
             self.update_time = pygame.time.get_ticks()
+
+    def check_alive(self):
+        if self.health <= 0:
+            self.health = 0
+            self.speed = 0
+            self.alive = False
+            self.update_action(3)
 
     def draw(self, screen):
         screen.blit(pygame.transform.flip(self.image, self.flip, False), self.rect)
