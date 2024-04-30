@@ -34,8 +34,8 @@ def draw_bg():
 #create sprite groups
 bullet_group = pygame.sprite.Group()
 
-player = Soldier ('player', 200, 200, 3, 5, 20)
-enemy = Soldier('enemy', 400, 200, 3, 5, 20)
+player = Soldier('player', 200, 200, 3, 5, 20, bullet_group, screen, False)
+enemy = Soldier('enemy', 400, 200, 3, 5, 20, bullet_group, screen, True)
 
 #game loop/events
 run = True
