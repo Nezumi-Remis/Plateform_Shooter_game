@@ -9,6 +9,7 @@ pygame.init()
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = int(SCREEN_WIDTH * 0.8)
 GRAVITY = 0.75
+TILE_SIZE = 40
 
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption('Platformer Shooter')
@@ -35,9 +36,12 @@ def draw_bg():
 #create sprite groups
 bullet_group = pygame.sprite.Group()
 grenade_group = pygame.sprite.Group()
+enemy_group = pygame.sprite.Group()
+explosion_group = pygame.sprite.Group()
 
 player = Soldier('player', 200, 200, 3, 5, 20, 5, bullet_group, screen, False)
 enemy = Soldier('enemy', 400, 200, 3, 5, 20, 0, bullet_group, screen, True)
+enemy_group.add(enemy)
 
 #game loop/events
 run = True
@@ -75,16 +79,16 @@ while run:
 
     #update and draw groups
     bullet_group.update()
-    grenade_group.update()
+    grenade_group.update(player, enemy_group, explosion_group)
     bullet_group.draw(screen)
     grenade_group.draw(screen)
 
+    #make entities take damage
     if pygame.sprite.spritecollide(enemy, bullet_group, False):
         if enemy.alive:
             enemy.health -= 25
             for bullet in bullet_group:
                 bullet.kill()
-
     for event in pygame.event.get():
         #quit game
         if event.type == pygame.QUIT:

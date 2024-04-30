@@ -1,8 +1,10 @@
 import pygame
 from Bullet import Bullet
+from Explosion import Explosion
 
 GRAVITY = 0.75
-SCREEN_WIDTH = 800  # Define SCREEN_WIDTH here
+SCREEN_WIDTH = 800
+TILE_SIZE = 40
 
 class Grenade(Bullet):
     def __init__(self, x, y, direction, soldier, bullet_group, is_enemy):
@@ -15,7 +17,7 @@ class Grenade(Bullet):
         self.rect.center = (x, y)
         self.direction = direction
 
-    def update(self):
+    def update(self, player, enemy_group, explosion_group):
         self.vel_y += GRAVITY
         dx = self.direction * self.speed
         dy = self.vel_y
@@ -39,3 +41,12 @@ class Grenade(Bullet):
         if self.timer <= 0:
             # explode the grenade
             self.kill()
+            explosion = Explosion(self.rect.x, self.rect.y, 1)
+            explosion_group.add(explosion)
+            if abs(self.rect.centerx - player.rect.centerx) < TILE_SIZE * 3 and \
+                abs(self.rect.centery - player.rect.centery) < TILE_SIZE * 3:
+                player.health -= 50
+            for enemy in enemy_group:
+                if abs(self.rect.centerx - enemy.rect.centerx) < TILE_SIZE * 3 and \
+                abs(self.rect.centery - enemy.rect.centery) < TILE_SIZE * 3:
+                    enemy.health -= 50
