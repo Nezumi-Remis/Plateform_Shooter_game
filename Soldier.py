@@ -6,7 +6,7 @@ from Bullet import Bullet
 GRAVITY = 0.75
 
 class Soldier(pygame.sprite.Sprite):
-    def __init__(self, char_type, x, y, scale, speed, ammo, bullet_group, screen, is_enemy):
+    def __init__(self, char_type, x, y, scale, speed, ammo, grenades, bullet_group, screen, is_enemy):
         pygame.sprite.Sprite.__init__(self)
         self.bullet_group = bullet_group
         self.is_enemy = is_enemy
@@ -17,6 +17,7 @@ class Soldier(pygame.sprite.Sprite):
         self.ammo = ammo
         self.start_ammo = ammo
         self.shoot_cooldown = 0
+        self.grenades = grenades
         self.health = 100
         self.max_health = self.health
         self.direction = 1
@@ -53,8 +54,6 @@ class Soldier(pygame.sprite.Sprite):
             self.shoot_cooldown -= 1
         # update animation
         self.update_animation()
-        # update action
-        self.update_action(self.action)
 
     def move(self, moving_left, moving_right):
         #reset movement variables

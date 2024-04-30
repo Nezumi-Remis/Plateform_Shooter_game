@@ -21,9 +21,3 @@ class Bullet(pygame.sprite.Sprite):
         #check if bullet has gone off screen
         if self.rect.right < 0 or self.rect.left > self.soldier.screen.get_width():
             self.kill()
-
-        #check collision with characters
-        if pygame.sprite.spritecollide(self.soldier, self.bullet_group, False):
-            if self.soldier.alive and not self.is_enemy:
-                self.soldier.health -= 5
-                self.kill()
