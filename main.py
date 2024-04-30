@@ -14,15 +14,20 @@ pygame.display.set_caption('Platformer Shooter')
 clock = pygame.time.Clock()
 FPS = 60
 
+#define game variables
+GRAVITY = 0.75
+
 #define player action variables
 moving_left = False
 moving_right = False
 
 #define colours
 BG = (144, 201, 120)
+RED = (255, 0, 0)
 
 def draw_bg():
 	screen.fill(BG)
+	pygame.draw.line(screen, RED, (0, 300), (SCREEN_WIDTH, 300))
 
 player = Soldier ('player', 200, 200, 3, 5)
 
@@ -34,8 +39,17 @@ while run:
 
     draw_bg()
 
+    player.update_animation()
     player.draw(screen)
-    player.move(moving_left, moving_right)
+
+    if player.alive:
+        if player.in_air:
+            player.update_action(2)#2: jump
+        elif moving_left or moving_right:
+            player.update_action(1)#1: run
+        else:
+            player.update_action(0)#0: idle
+        player.move(moving_left, moving_right)
 
 
     for event in pygame.event.get():
@@ -48,8 +62,11 @@ while run:
                 moving_left = True
             if event.key == pygame.K_d:
                 moving_right = True
+            if event.key == pygame.K_w and player.alive:
+                player.jump = True
             if event.key == pygame.K_ESCAPE:
                 run = False
+            
         #keivoard button realesed
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_a:
@@ -58,6 +75,6 @@ while run:
                 moving_right = False
 
 
-        pygame.display.update()
+    pygame.display.update()
 
 pygame.quit()
