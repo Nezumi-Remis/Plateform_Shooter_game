@@ -45,16 +45,6 @@ while run:
 
     draw_bg()
 
-    player.update_animation()
-    player.draw(screen)
-
-    enemy.update()
-    enemy.draw(screen)
-
-    #update and draw groups
-    bullet_group.update()
-    bullet_group.draw(screen)
-
     if player.alive:
         #shoot bullets
         if shoot:
@@ -67,6 +57,15 @@ while run:
             player.update_action(0)#0: idle
         player.move(moving_left, moving_right)
 
+    player.update()
+    player.draw(screen)
+
+    enemy.update()
+    enemy.draw(screen)
+
+    #update and draw groups
+    bullet_group.update()
+    bullet_group.draw(screen)
 
     for event in pygame.event.get():
         #quit game
