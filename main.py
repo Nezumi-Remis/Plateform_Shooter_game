@@ -80,8 +80,10 @@ while run:
     #update and draw groups
     bullet_group.update()
     grenade_group.update(player, enemy_group, explosion_group)
+    explosion_group.update()
     bullet_group.draw(screen)
     grenade_group.draw(screen)
+    explosion_group.draw(screen)
 
     #make entities take damage
     if pygame.sprite.spritecollide(enemy, bullet_group, False):

@@ -41,7 +41,7 @@ class Grenade(Bullet):
         if self.timer <= 0:
             # explode the grenade
             self.kill()
-            explosion = Explosion(self.rect.x, self.rect.y, 1)
+            explosion = Explosion(self.rect.x, self.rect.y, 2)
             explosion_group.add(explosion)
             if abs(self.rect.centerx - player.rect.centerx) < TILE_SIZE * 3 and \
                 abs(self.rect.centery - player.rect.centery) < TILE_SIZE * 3:
