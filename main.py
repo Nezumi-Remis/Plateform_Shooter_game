@@ -66,7 +66,7 @@ item_box_group.add(item_box)
 player = Soldier('player', 200, 200, 3, 5, 20, 5, bullet_group, screen, False)
 health_bar = HealthBar(10, 10, player.health, player.max_health)
 
-enemy = Soldier('enemy', 400, 200, 3, 5, 20, 0, bullet_group, screen, True)
+enemy = Soldier('enemy', 400, 200, 3, 3, 20, 0, bullet_group, screen, True)
 enemy_group.add(enemy)
 
 #game loop/events
@@ -111,8 +111,10 @@ while run:
     player.update()
     player.draw(screen)
 
-    enemy.update()
-    enemy.draw(screen)
+    for enemy in enemy_group:
+        enemy.ai(player)
+        enemy.update()
+        enemy.draw(screen)
 
     #update and draw groups
     bullet_group.update()
@@ -125,6 +127,11 @@ while run:
     item_box_group.draw(screen)
 
     #make entities take damage
+    if pygame.sprite.spritecollide(player, bullet_group, False):
+        if player.alive:
+            player.health -= 10
+            for bullet in bullet_group:
+                bullet.kill()
     if pygame.sprite.spritecollide(enemy, bullet_group, False):
         if enemy.alive:
             enemy.health -= 25

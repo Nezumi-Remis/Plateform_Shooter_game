@@ -1,9 +1,11 @@
 import pygame
 import os
+import random
 from Bullet import Bullet
 
 #define game variables
 GRAVITY = 0.75
+TILE_SIZE = 40
 
 class Soldier(pygame.sprite.Sprite):
     def __init__(self, char_type, x, y, scale, speed, ammo, grenades, bullet_group, screen, is_enemy):
@@ -29,6 +31,11 @@ class Soldier(pygame.sprite.Sprite):
         self.frame_index = 0
         self.action = 0
         self.update_time = pygame.time.get_ticks()
+        #ai specific variables
+        self.move_counter = 0
+        self.vision = pygame.Rect(0, 0, 150 , 20)
+        self.idling = False
+        self.idling_counter = 0
 
         #load all images for the player
         animation_types = ['Idle', 'Run', 'Jump', 'Death']
@@ -97,6 +104,39 @@ class Soldier(pygame.sprite.Sprite):
             bullet = Bullet(self.rect.centerx + (0.6 * self.rect.size[0] * self.direction), self.rect.centery, self.direction, self, bullet_group=self.bullet_group, is_enemy=self.is_enemy)
             self.bullet_group.add(bullet)
             self.ammo -= 1
+
+    def ai(self, player):
+        if self.alive and player.alive:
+            if self.idling == False and random.randint(1, 250) == 1:
+                self.update_action(0)#0: idle
+                self.idling = True
+                self.idling_counter = 100
+            #check if the ai is near player
+            if self.vision.colliderect(player.rect):
+                #stop running and face the player
+                self.update_action(0)#0: idle
+                self.shoot()
+            else:
+                if self.idling == False:
+                    if self.direction == 1:
+                        ai_moving_right = True
+                    else:
+                        ai_moving_right = False
+                    ai_moving_left = not ai_moving_right
+                    self.move(ai_moving_left, ai_moving_right)
+                    self.update_action(1)#1: run
+                    self.move_counter += 1
+                    #update ai vision as enemy moves
+                    self.vision.center = (self.rect.centerx + 75 * self.direction, self.rect.centery)
+                    if self.move_counter > TILE_SIZE:
+                        self.direction *= -1
+                        self.move_counter *= -1
+                else:
+                    self.idling_counter -= 1
+                    if self.idling_counter <= 0:
+                        self.idling = False
+        elif player.alive == False:
+            self.update_action(0)#0: idle
 
     def update_animation(self):
         #update animation
