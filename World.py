@@ -31,7 +31,7 @@ class World():
                         water = Water(img, x * TILE_SIZE, y * TILE_SIZE)
                         water_group.add(water)
                     elif tile >= 11 and tile <= 14:
-                        Decoration = Decoration(img, x * TILE_SIZE, y * TILE_SIZE)
+                        decoration = Decoration(img, x * TILE_SIZE, y * TILE_SIZE)
                         decoration_group.add(decoration)
                     elif tile == 15: #create player
                         player = Soldier('player', x * TILE_SIZE, y * TILE_SIZE, 1.65, 5, 20, 5, bullet_group, screen, False)
@@ -52,7 +52,7 @@ class World():
                         exit = Exit(img, x * TILE_SIZE, y * TILE_SIZE)
                         exit_group.add(exit)
 
-        return player.health_bar
+        return player, health_bar
     
     def draw(self, screen):
         for tile in self.obstacle_list:

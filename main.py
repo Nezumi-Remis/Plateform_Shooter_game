@@ -1,4 +1,5 @@
 import pygame
+import csv
 from GameConstants import *
 from Soldier import Soldier
 from Grenade import Grenade
@@ -44,7 +45,7 @@ enemy_group = pygame.sprite.Group()
 explosion_group = pygame.sprite.Group()
 item_box_group = pygame.sprite.Group()
 decoration_group = pygame.sprite.Group()
-water_grup = pygame.sprite.Group()
+water_group = pygame.sprite.Group()
 exit_group = pygame.sprite.Group()
 
 
@@ -55,11 +56,11 @@ for row in range(ROWS):
     world_data.append(r)
 #load in level data and create world
 with open(f'level{LEVEL}_data.csv', newline='') as csvfile:
-    reader = csv.reader(csvfile, delimiter='')
+    reader = csv.reader(csvfile, delimiter=',')
     for x, row in enumerate(reader):
         for y, tile in enumerate(row):
-            world_datap[x][y] = int(tile)
-world = Wold()
+            world_data[x][y] = int(tile)
+world = World()
 player, health_bar = world.process_data(world_data, screen, bullet_group, water_group, decoration_group, enemy_group, item_box_group, exit_group)
 
 
