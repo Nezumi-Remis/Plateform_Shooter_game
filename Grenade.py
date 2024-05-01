@@ -5,7 +5,7 @@ from Explosion import Explosion
 from GameConstants import *
 
 class Grenade(Bullet):
-    def __init__(self, x, y, direction, soldier, bullet_group, is_enemy):
+    def __init__(self, x, y, direction, soldier, bullet_group, is_enemy, obstacle_list):
         super().__init__(x, y, direction, soldier, bullet_group, is_enemy)
         self.timer = 100
         self.vel_y = -11
@@ -14,6 +14,9 @@ class Grenade(Bullet):
         self.rect = self.image.get_rect()
         self.rect.center = (x, y)
         self.direction = direction
+        self.obstacle_list = obstacle_list
+        self.width = self.image.get_width()
+        self.height = self.image.get_height()
 
     def update(self, player, enemy_group, explosion_group):
         self.vel_y += GRAVITY
@@ -21,14 +24,23 @@ class Grenade(Bullet):
         dy = self.vel_y
 
         # check collision with floor
-        if self.rect.bottom + dy > 300:
-            dy = 300 - self.rect.bottom
-            self.speed = 0
-
-        # check collision with walls
-        if self.rect.left + dx < 0 or self.rect.right + dx > SCREEN_WIDTH:
-            self.direction *= -1
-            dx = self.direction * self.speed
+        #check for collision
+        for tile in self.obstacle_list:
+            #check collision in the x direction
+            if tile[1].colliderect(self.rect.x + dx, self.rect.y, self.width, self.height):
+                self.direction *= -1
+                dx = self.direction * self.speed
+            #check for collision in the y direction
+            if tile[1].colliderect(self.rect.x, self.rect.y + dy, self.width, self.height):
+                self.speed = 0
+                #check if below the ground i.e. jumping
+                if self.vel_y < 0:
+                    self.vel_y = 0
+                    dy = tile[1].bottom - self.rect.top
+                #check if above the ground, i.e. falling
+                elif self.vel_y >= 0:
+                    self.vel_y = 0
+                    dy = tile[1].top - self.rect.bottom
 
         # update grenade position
         self.rect.x += dx

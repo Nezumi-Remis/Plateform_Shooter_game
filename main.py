@@ -36,7 +36,6 @@ def draw_text(text, font, text_col, x, y):
 
 def draw_bg():
 	screen.fill(BG)
-	pygame.draw.line(screen, RED, (0, 300), (SCREEN_WIDTH, 300))
 
 #create sprite groups
 bullet_group = pygame.sprite.Group()
@@ -94,7 +93,7 @@ while run:
         #throw grenade
         elif grenade and player.grenades > 0 and grenade_thrown == False:
             grenade = Grenade(player.rect.centerx + (0.5 * player.rect.size[0] * player.direction),\
-                  player.rect.top, player.direction, player, bullet_group, False)
+                  player.rect.top, player.direction, player, bullet_group, False, world.obstacle_list)
             grenade_group.add(grenade)
             player.grenades -= 1
             grenade_thrown = True

@@ -6,7 +6,7 @@ from Bullet import Bullet
 from GameConstants import *
 
 class Soldier(pygame.sprite.Sprite):
-    def __init__(self, char_type, x, y, scale, speed, ammo, grenades, bullet_group, screen, is_enemy):
+    def __init__(self, char_type, x, y, scale, speed, ammo, grenades, bullet_group, screen, is_enemy, obstacle_list):
         pygame.sprite.Sprite.__init__(self)
         self.bullet_group = bullet_group
         self.is_enemy = is_enemy
@@ -29,6 +29,7 @@ class Soldier(pygame.sprite.Sprite):
         self.frame_index = 0
         self.action = 0
         self.update_time = pygame.time.get_ticks()
+        self.obstacle_list = obstacle_list
         #ai specific variables
         self.move_counter = 0
         self.vision = pygame.Rect(0, 0, 150 , 20)
@@ -51,6 +52,8 @@ class Soldier(pygame.sprite.Sprite):
         self.image = self.animation_list[self.action][self.frame_index]
         self.rect = self.image.get_rect()
         self.rect.center = (x, y)
+        self.width = self.image.get_width()
+        self.height = self.image.get_height()
 
     def update(self):
         self.check_alive()
@@ -87,10 +90,32 @@ class Soldier(pygame.sprite.Sprite):
             self.vel_y
         dy += self.vel_y
 
-        #check collision with floor
-        if self.rect.bottom + dy > 300:
-            dy = 300 - self.rect.bottom
-            self.in_air = False
+        #check for collision with edges of screen
+        if self.rect.left + dx < 0:
+            dx = 0
+        if self.rect.right + dx > SCREEN_WIDTH:
+            dx = 0
+        if self.rect.top + dy < 0:
+            dy = 0
+        if self.rect.bottom + dy > SCREEN_HEIGHT:
+            dy = 0
+
+        #check for collision with tiles
+        for tile in self.obstacle_list:
+            #check collision in the x direction
+            if tile[1].colliderect(self.rect.x + dx, self.rect.y, self.width, self.height):
+                dx = 0
+            #check for collision in the y direction
+            if tile[1].colliderect(self.rect.x, self.rect.y + dy, self.width, self.height):
+                #check if below the ground i.e. jumping
+                if self.vel_y < 0:
+                    self.vel_y = 0
+                    dy = tile[1].bottom - self.rect.top
+                #check if above the ground, i.e. falling
+                elif self.vel_y >= 0:
+                    self.vel_y = 0
+                    self.in_air = False
+                    dy = tile[1].top - self.rect.bottom
 
         #update rectangle position
         self.rect.x += dx
