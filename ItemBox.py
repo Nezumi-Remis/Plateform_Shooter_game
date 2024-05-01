@@ -1,6 +1,6 @@
 import pygame
 
-TILE_SIZE = 40
+from GameConstants import *
 
 health_box_img = pygame.image.load('img/icons/health_box.png')
 ammo_box_img = pygame.image.load('img/icons/ammo_box.png')

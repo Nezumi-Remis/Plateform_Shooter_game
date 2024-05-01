@@ -1,17 +1,12 @@
 import pygame
+from GameConstants import *
 from Soldier import Soldier
 from Grenade import Grenade
 from ItemBox import ItemBox
 from HealthBar import HealthBar
-
+from World import World
 
 pygame.init()
-
-#define game constants
-SCREEN_WIDTH = 800
-SCREEN_HEIGHT = int(SCREEN_WIDTH * 0.8)
-GRAVITY = 0.75
-TILE_SIZE = 40
 
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption('Platformer Shooter')
@@ -31,13 +26,8 @@ grenade_thrown = False
 bullet_img = pygame.image.load('img/icons/bullet.png').convert_alpha()
 grenade_img = pygame.image.load('img/icons/grenade.png').convert_alpha()
 
-#define colours
-BG = (144, 201, 120)
-RED = (255, 0, 0)
-WHITE = (255, 255, 255)
-
 #define font
-font = pygame.font.SysFont('Futura', 30)
+font = pygame.font.SysFont(FONT_NAME, FONT_SIZE)
 
 def draw_text(text, font, text_col, x, y):
     img = font.render(text, True, text_col)
@@ -52,22 +42,26 @@ bullet_group = pygame.sprite.Group()
 grenade_group = pygame.sprite.Group()
 enemy_group = pygame.sprite.Group()
 explosion_group = pygame.sprite.Group()
-
 item_box_group = pygame.sprite.Group()
+decoration_group = pygame.sprite.Group()
+water_grup = pygame.sprite.Group()
+exit_group = pygame.sprite.Group()
 
-#temp - create item boxes
-item_box = ItemBox('Health', 100, 260)
-item_box_group.add(item_box)
-item_box = ItemBox('Ammo', 400, 260)
-item_box_group.add(item_box)
-item_box = ItemBox('Grenade', 500, 260)
-item_box_group.add(item_box)
 
-player = Soldier('player', 200, 200, 3, 5, 20, 5, bullet_group, screen, False)
-health_bar = HealthBar(10, 10, player.health, player.max_health)
+#create empty tile list
+world_data = []
+for row in range(ROWS):
+    r = [-1] * COLS
+    world_data.append(r)
+#load in level data and create world
+with open(f'level{LEVEL}_data.csv', newline='') as csvfile:
+    reader = csv.reader(csvfile, delimiter='')
+    for x, row in enumerate(reader):
+        for y, tile in enumerate(row):
+            world_datap[x][y] = int(tile)
+world = Wold()
+player, health_bar = world.process_data(world_data, screen, bullet_group, water_group, decoration_group, enemy_group, item_box_group, exit_group)
 
-enemy = Soldier('enemy', 400, 200, 3, 3, 20, 0, bullet_group, screen, True)
-enemy_group.add(enemy)
 
 #game loop/events
 run = True
@@ -75,7 +69,10 @@ while run:
 
     clock.tick(FPS)
 
+    #update background
     draw_bg()
+    #draw world map
+    world.draw(screen)
 
     #show player health
     health_bar.draw(player.health, screen)
@@ -121,10 +118,18 @@ while run:
     grenade_group.update(player, enemy_group, explosion_group)
     explosion_group.update()
     item_box_group.update(player)
+    decoration_group.update()
+    water_group.update()
+    exit_group.update()
+
+
     bullet_group.draw(screen)
     grenade_group.draw(screen)
     explosion_group.draw(screen)
     item_box_group.draw(screen)
+    decoration_group.draw(screen)
+    water_group.draw(screen)
+    exit_group.draw(screen)
 
     #make entities take damage
     if pygame.sprite.spritecollide(player, bullet_group, False):
@@ -137,6 +142,8 @@ while run:
             enemy.health -= 25
             for bullet in bullet_group:
                 bullet.kill()
+
+    #events
     for event in pygame.event.get():
         #quit game
         if event.type == pygame.QUIT:

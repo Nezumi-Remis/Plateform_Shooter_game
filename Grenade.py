@@ -2,9 +2,7 @@ import pygame
 from Bullet import Bullet
 from Explosion import Explosion
 
-GRAVITY = 0.75
-SCREEN_WIDTH = 800
-TILE_SIZE = 40
+from GameConstants import *
 
 class Grenade(Bullet):
     def __init__(self, x, y, direction, soldier, bullet_group, is_enemy):

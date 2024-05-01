@@ -3,9 +3,7 @@ import os
 import random
 from Bullet import Bullet
 
-#define game variables
-GRAVITY = 0.75
-TILE_SIZE = 40
+from GameConstants import *
 
 class Soldier(pygame.sprite.Sprite):
     def __init__(self, char_type, x, y, scale, speed, ammo, grenades, bullet_group, screen, is_enemy):

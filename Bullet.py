@@ -1,6 +1,6 @@
 import pygame
 
-SCREEN_WIDTH = 800
+from GameConstants import *
 
 class Bullet(pygame.sprite.Sprite):
     def __init__(self, x, y, direction, soldier, bullet_group, is_enemy):
