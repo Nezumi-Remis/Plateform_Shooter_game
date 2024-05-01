@@ -68,7 +68,7 @@ class Soldier(pygame.sprite.Sprite):
         dx = 0
         dy = 0
 
-        #assing movement variables
+        #assign movement variables
         if moving_left:
             dx = -self.__speed
             self.flip = True
@@ -90,16 +90,6 @@ class Soldier(pygame.sprite.Sprite):
             self.vel_y
         dy += self.vel_y
 
-        #check for collision with edges of screen
-        if self.rect.left + dx < 0:
-            dx = 0
-        if self.rect.right + dx > SCREEN_WIDTH:
-            dx = 0
-        if self.rect.top + dy < 0:
-            dy = 0
-        if self.rect.bottom + dy > SCREEN_HEIGHT:
-            dy = 0
-
         #check for collision with tiles
         for tile in self.obstacle_list:
             #check collision in the x direction
@@ -116,6 +106,13 @@ class Soldier(pygame.sprite.Sprite):
                     self.vel_y = 0
                     self.in_air = False
                     dy = tile[1].top - self.rect.bottom
+
+                #check if standing on a tile
+                if self.vel_y == 0 and dy == 0:
+                    if tile[1].bottom == self.rect.top:
+                        self.in_air = False
+                    elif tile[1].top == self.rect.bottom:
+                        self.in_air = True
 
         #update rectangle position
         self.rect.x += dx
