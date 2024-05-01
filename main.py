@@ -1,6 +1,8 @@
 import pygame
 from Soldier import Soldier
 from Grenade import Grenade
+from ItemBox import ItemBox
+from HealthBar import HealthBar
 
 
 pygame.init()
@@ -25,9 +27,21 @@ shoot = False
 grenade = False
 grenade_thrown = False
 
+#load images
+bullet_img = pygame.image.load('img/icons/bullet.png').convert_alpha()
+grenade_img = pygame.image.load('img/icons/grenade.png').convert_alpha()
+
 #define colours
 BG = (144, 201, 120)
 RED = (255, 0, 0)
+WHITE = (255, 255, 255)
+
+#define font
+font = pygame.font.SysFont('Futura', 30)
+
+def draw_text(text, font, text_col, x, y):
+    img = font.render(text, True, text_col)
+    screen.blit(img, (x, y))
 
 def draw_bg():
 	screen.fill(BG)
@@ -39,7 +53,19 @@ grenade_group = pygame.sprite.Group()
 enemy_group = pygame.sprite.Group()
 explosion_group = pygame.sprite.Group()
 
+item_box_group = pygame.sprite.Group()
+
+#temp - create item boxes
+item_box = ItemBox('Health', 100, 260)
+item_box_group.add(item_box)
+item_box = ItemBox('Ammo', 400, 260)
+item_box_group.add(item_box)
+item_box = ItemBox('Grenade', 500, 260)
+item_box_group.add(item_box)
+
 player = Soldier('player', 200, 200, 3, 5, 20, 5, bullet_group, screen, False)
+health_bar = HealthBar(10, 10, player.health, player.max_health)
+
 enemy = Soldier('enemy', 400, 200, 3, 5, 20, 0, bullet_group, screen, True)
 enemy_group.add(enemy)
 
@@ -50,6 +76,17 @@ while run:
     clock.tick(FPS)
 
     draw_bg()
+
+    #show player health
+    health_bar.draw(player.health, screen)
+    #show ammo
+    draw_text('AMMO:', font, WHITE, 10, 35)
+    for x in range(player.ammo):
+        screen.blit(bullet_img, (90 + (x * 10), 40))
+    draw_text('GRENADES:', font, WHITE, 10, 60)
+    for x in range(player.grenades):
+        screen.blit(grenade_img, (135 + (x * 15), 60))
+
 
     #update player actions
     if player.alive:
@@ -81,9 +118,11 @@ while run:
     bullet_group.update()
     grenade_group.update(player, enemy_group, explosion_group)
     explosion_group.update()
+    item_box_group.update(player)
     bullet_group.draw(screen)
     grenade_group.draw(screen)
     explosion_group.draw(screen)
+    item_box_group.draw(screen)
 
     #make entities take damage
     if pygame.sprite.spritecollide(enemy, bullet_group, False):
