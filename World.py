@@ -65,10 +65,19 @@ class Decoration(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.midtop = (x + TILE_SIZE // 2, y + (TILE_SIZE - self.image.get_height()))
 
+    def position(self, x, y):
+        self.rect.midtop = (x + TILE_SIZE // 2, y + (TILE_SIZE - self.image.get_height()))
+
 class Water(Decoration):
     def __init__(self, img, x, y):
         super().__init__(img, x * TILE_SIZE, y * TILE_SIZE)
 
+    def position(self, x, y):
+        super().position(x * TILE_SIZE, y * TILE_SIZE)
+
 class Exit(Decoration):
     def __init__(self, img, x, y):
-        super().__init__(img, x * TILE_SIZE, y * TILE_SIZE)    
+        super().__init__(img, x * TILE_SIZE, y * TILE_SIZE)
+
+    def position(self, x, y):
+        super().position(x * TILE_SIZE, y * TILE_SIZE) 
