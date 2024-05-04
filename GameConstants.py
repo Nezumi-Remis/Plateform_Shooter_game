@@ -17,3 +17,8 @@ BLACK = (0, 0, 0)
 # font
 FONT_NAME = 'Futura'
 FONT_SIZE = 30
+
+#player values
+SPEED = 5
+AMMO = 10
+GRENADES = 5
