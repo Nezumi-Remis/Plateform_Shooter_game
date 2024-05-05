@@ -6,9 +6,11 @@ from Bullet import Bullet
 from GameConstants import *
 
 class Soldier(pygame.sprite.Sprite):
-    def __init__(self, char_type, x, y, scale, speed, ammo, grenades, bullet_group, screen, is_enemy, obstacle_list):
+    def __init__(self, char_type, x, y, scale, speed, ammo, grenades, bullet_group, screen, is_enemy, obstacle_list, water_group, exit_group):
         pygame.sprite.Sprite.__init__(self)
         self.bullet_group = bullet_group
+        self.water_group = water_group
+        self.exit_group = exit_group
         self.is_enemy = is_enemy
         self.screen = screen
         self.alive = True
@@ -115,9 +117,18 @@ class Soldier(pygame.sprite.Sprite):
                     elif tile[1].top == self.rect.bottom:
                         self.in_air = True
         
+        #check if fallen in water
+        if pygame.sprite.spritecollide(self, self.water_group, False):
+            self.health = 0
+
         #check if fallen of map
         if self.rect.bottom > SCREEN_HEIGHT:
             self.health = 0
+
+        level_complete = False
+        #check for collision with exit
+        if pygame.sprite.spritecollide(self, self.exit_group, False):
+            level_complete = True
 
         #update rectangle position
         self.rect.x += dx
@@ -129,7 +140,7 @@ class Soldier(pygame.sprite.Sprite):
                 self.rect.x -= dx
                 SCREEN_SCROLL = -dx
 
-        return SCREEN_SCROLL
+        return SCREEN_SCROLL, level_complete
 
     def shoot(self):
         if self.shoot_cooldown == 0 and self.ammo > 0:

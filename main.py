@@ -18,7 +18,7 @@ start_game = False
 
 #set framerate
 clock = pygame.time.Clock()
-FPS = 60
+FPS = 90
 
 #define player action variables
 moving_left = False
@@ -155,7 +155,7 @@ while run:
                 player.update_action(1)#1: run
             else:
                 player.update_action(0)#0: idle
-            SCREEN_SCROLL = player.move(moving_left, moving_right)
+            SCREEN_SCROLL, level_complete = player.move(moving_left, moving_right)
             BG_SCROLL -= SCREEN_SCROLL
         else:
             SCREEN_SCROLL = 0

@@ -3,6 +3,7 @@ from GameConstants import *
 from Soldier import Soldier
 from HealthBar import HealthBar
 from ItemBox import ItemBox
+from abc import ABC, abstractmethod
 
 #load images of tiles
 img_list = []
@@ -34,10 +35,10 @@ class World():
                         decoration = Decoration(img, x * TILE_SIZE, y * TILE_SIZE)
                         decoration_group.add(decoration)
                     elif tile == 15: #create player
-                        player = Soldier('player', x * TILE_SIZE, y * TILE_SIZE, 1.65, 5, 20, 5, bullet_group, screen, False, self.obstacle_list)
+                        player = Soldier('player', x * TILE_SIZE, y * TILE_SIZE, 1.65, 5, 20, 5, bullet_group, screen, False, self.obstacle_list, water_group, exit_group)
                         health_bar = HealthBar(10, 10, player.health, player.max_health)
                     elif tile == 16: #create enemies
-                        enemy = Soldier('enemy', x * TILE_SIZE, y * TILE_SIZE, 1.65, 2, 20, 0, bullet_group, screen, True, self.obstacle_list)
+                        enemy = Soldier('enemy', x * TILE_SIZE, y * TILE_SIZE, 1.65, 2, 20, 0, bullet_group, screen, True, self.obstacle_list, water_group, exit_group)
                         enemy_group.add(enemy)
                     elif tile == 17: #create ammo box
                         item_box = ItemBox('Ammo', x * TILE_SIZE, y * TILE_SIZE)
@@ -59,26 +60,25 @@ class World():
             tile[1][0] += SCREEN_SCROLL
             screen.blit(tile[0], tile[1])
 
-class Decoration(pygame.sprite.Sprite):
+class DecorationAbstract(ABC, pygame.sprite.Sprite):
     def __init__(self, img, x, y):
         pygame.sprite.Sprite.__init__(self)
         self.image = img
         self.rect = self.image.get_rect()
         self.rect.midtop = (x + TILE_SIZE // 2, y + (TILE_SIZE - self.image.get_height()))
 
+    @abstractmethod
+    def update(self, SCREEN_SCROLL):
+        pass
+
+class Decoration(DecorationAbstract):
     def update(self, SCREEN_SCROLL):
         self.rect.x += SCREEN_SCROLL
 
-class Water(Decoration):
-    def __init__(self, img, x, y):
-        super().__init__(img, x * TILE_SIZE, y * TILE_SIZE)
-
+class Water(DecorationAbstract):
     def update(self, SCREEN_SCROLL):
         self.rect.x += SCREEN_SCROLL
 
-class Exit(Decoration):
-    def __init__(self, img, x, y):
-        super().__init__(img, x * TILE_SIZE, y * TILE_SIZE)
-
+class Exit(DecorationAbstract):
     def update(self, SCREEN_SCROLL):
         self.rect.x += SCREEN_SCROLL
