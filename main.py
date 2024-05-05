@@ -26,6 +26,10 @@ grenade_thrown = False
 #load images
 bullet_img = pygame.image.load('img/icons/bullet.png').convert_alpha()
 grenade_img = pygame.image.load('img/icons/grenade.png').convert_alpha()
+pine1_img = pygame.image.load('img/background/pine1.png').convert_alpha()
+pine2_img = pygame.image.load('img/background/pine2.png').convert_alpha()
+mountain_img = pygame.image.load('img/background/mountain.png').convert_alpha()
+sky_img = pygame.image.load('img/background/sky_cloud.png').convert_alpha()
 
 #define font
 font = pygame.font.SysFont(FONT_NAME, FONT_SIZE)
@@ -35,7 +39,13 @@ def draw_text(text, font, text_col, x, y):
     screen.blit(img, (x, y))
 
 def draw_bg():
-	screen.fill(BG)
+    screen.fill(BG)
+    width = sky_img.get_width()
+    for x in range(5):
+        screen.blit(sky_img, ((x * width) - BG_SCROLL * 0.5, 0))
+        screen.blit(mountain_img, ((x * width) - BG_SCROLL * 0.6, SCREEN_HEIGHT - mountain_img.get_height() - 300))
+        screen.blit(pine1_img, ((x * width) - BG_SCROLL * 0.7, SCREEN_HEIGHT - pine1_img.get_height() - 150))
+        screen.blit(pine2_img, ((x * width) - BG_SCROLL * 0.8, SCREEN_HEIGHT - pine2_img.get_height()))
 
 #create sprite groups
 bullet_group = pygame.sprite.Group()
@@ -72,7 +82,7 @@ while run:
     #update background
     draw_bg()
     #draw world map
-    world.draw(screen)
+    world.draw(screen, SCREEN_SCROLL)
 
     #show player health
     health_bar.draw(player.health, screen)
@@ -103,24 +113,25 @@ while run:
             player.update_action(1)#1: run
         else:
             player.update_action(0)#0: idle
-        player.move(moving_left, moving_right)
+        SCREEN_SCROLL = player.move(moving_left, moving_right)
+        BG_SCROLL -= SCREEN_SCROLL
 
     player.update()
     player.draw(screen)
 
     for enemy in enemy_group:
-        enemy.ai(player)
+        enemy.ai(player, SCREEN_SCROLL)
         enemy.update()
         enemy.draw(screen)
 
     #update and draw groups
-    bullet_group.update()
-    grenade_group.update(player, enemy_group, explosion_group)
-    explosion_group.update()
-    item_box_group.update(player)
-    decoration_group.update()
-    water_group.update()
-    exit_group.update()
+    bullet_group.update(SCREEN_SCROLL)
+    grenade_group.update(player, enemy_group, explosion_group, SCREEN_SCROLL)
+    explosion_group.update(SCREEN_SCROLL)
+    item_box_group.update(player, SCREEN_SCROLL)
+    decoration_group.update(SCREEN_SCROLL)
+    water_group.update(SCREEN_SCROLL)
+    exit_group.update(SCREEN_SCROLL)
 
 
     bullet_group.draw(screen)

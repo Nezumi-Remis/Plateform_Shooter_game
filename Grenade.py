@@ -18,7 +18,7 @@ class Grenade(Bullet):
         self.width = self.image.get_width()
         self.height = self.image.get_height()
 
-    def update(self, player, enemy_group, explosion_group):
+    def update(self, player, enemy_group, explosion_group, SCREEN_SCROLL):
         self.vel_y += GRAVITY
         dx = self.direction * self.speed
         dy = self.vel_y
@@ -43,7 +43,7 @@ class Grenade(Bullet):
                     dy = tile[1].top - self.rect.bottom
 
         # update grenade position
-        self.rect.x += dx
+        self.rect.x += dx + SCREEN_SCROLL
         self.rect.y += dy
 
         # decrement timer

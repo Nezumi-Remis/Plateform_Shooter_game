@@ -14,9 +14,9 @@ class Bullet(pygame.sprite.Sprite):
         self.bullet_group = bullet_group
         self.is_enemy = is_enemy
 
-    def update(self):
+    def update(self, SCREEN_SCROLL):
         #move bullet
-        self.rect.x += (self.__speed * self.direction)
+        self.rect.x += (self.__speed * self.direction) + SCREEN_SCROLL
 
         #check if bullet has gone off screen
         if self.rect.right < 0 or self.rect.left > self.soldier.screen.get_width():

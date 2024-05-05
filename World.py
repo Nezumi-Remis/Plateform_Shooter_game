@@ -54,8 +54,9 @@ class World():
 
         return player, health_bar
     
-    def draw(self, screen):
+    def draw(self, screen, SCREEN_SCROLL):
         for tile in self.obstacle_list:
+            tile[1][0] += SCREEN_SCROLL
             screen.blit(tile[0], tile[1])
 
 class Decoration(pygame.sprite.Sprite):
@@ -65,19 +66,19 @@ class Decoration(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.midtop = (x + TILE_SIZE // 2, y + (TILE_SIZE - self.image.get_height()))
 
-    def position(self, x, y):
-        self.rect.midtop = (x + TILE_SIZE // 2, y + (TILE_SIZE - self.image.get_height()))
+    def update(self, SCREEN_SCROLL):
+        self.rect.x += SCREEN_SCROLL
 
 class Water(Decoration):
     def __init__(self, img, x, y):
         super().__init__(img, x * TILE_SIZE, y * TILE_SIZE)
 
-    def position(self, x, y):
-        super().position(x * TILE_SIZE, y * TILE_SIZE)
+    def update(self, SCREEN_SCROLL):
+        self.rect.x += SCREEN_SCROLL
 
 class Exit(Decoration):
     def __init__(self, img, x, y):
         super().__init__(img, x * TILE_SIZE, y * TILE_SIZE)
 
-    def position(self, x, y):
-        super().position(x * TILE_SIZE, y * TILE_SIZE) 
+    def update(self, SCREEN_SCROLL):
+        self.rect.x += SCREEN_SCROLL

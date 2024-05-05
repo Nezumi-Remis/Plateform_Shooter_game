@@ -65,6 +65,7 @@ class Soldier(pygame.sprite.Sprite):
 
     def move(self, moving_left, moving_right):
         #reset movement variables
+        SCREEN_SCROLL = 0
         dx = 0
         dy = 0
 
@@ -118,6 +119,14 @@ class Soldier(pygame.sprite.Sprite):
         self.rect.x += dx
         self.rect.y += dy
 
+        #update scroll
+        if self.char_type == 'player':
+            if self.rect.right > SCREEN_WIDTH - SCROLL_THRESH or self.rect.left < SCROLL_THRESH:
+                self.rect.x -= dx
+                SCREEN_SCROLL = -dx
+
+        return SCREEN_SCROLL
+
     def shoot(self):
         if self.shoot_cooldown == 0 and self.ammo > 0:
             self.shoot_cooldown = 20
@@ -125,7 +134,7 @@ class Soldier(pygame.sprite.Sprite):
             self.bullet_group.add(bullet)
             self.ammo -= 1
 
-    def ai(self, player):
+    def ai(self, player, SCREEN_SCROLL):
         if self.alive and player.alive:
             if self.idling == False and random.randint(1, 250) == 1:
                 self.update_action(0)#0: idle
@@ -157,6 +166,8 @@ class Soldier(pygame.sprite.Sprite):
                         self.idling = False
         elif player.alive == False:
             self.update_action(0)#0: idle
+        
+        self.rect.x += SCREEN_SCROLL
 
     def update_animation(self):
         #update animation
