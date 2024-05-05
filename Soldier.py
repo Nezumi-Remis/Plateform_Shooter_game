@@ -114,6 +114,10 @@ class Soldier(pygame.sprite.Sprite):
                         self.in_air = False
                     elif tile[1].top == self.rect.bottom:
                         self.in_air = True
+        
+        #check if fallen of map
+        if self.rect.bottom > SCREEN_HEIGHT:
+            self.health = 0
 
         #update rectangle position
         self.rect.x += dx
