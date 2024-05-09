@@ -8,6 +8,7 @@ from HealthBar import HealthBar
 from World import World
 from Button import Button
 from Fade import ScreenFade
+from PlayerStats import PlayerStats
 
 pygame.init()
 
@@ -112,6 +113,7 @@ with open(f'level{LEVEL}_data.csv', newline='') as csvfile:
 world = World()
 player, health_bar = world.process_data(world_data, screen, bullet_group, water_group, decoration_group, enemy_group, item_box_group, exit_group)
 
+stats = PlayerStats('player_stats.txt')
 
 #game loop/events
 run = True
@@ -243,6 +245,7 @@ while run:
         #quit game
         if event.type == pygame.QUIT:
             run = False
+            stats.save_stats()
         #keyboard presses
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_a:
@@ -250,13 +253,17 @@ while run:
             if event.key == pygame.K_d:
                 moving_right = True
             if event.key == pygame.K_SPACE:
+                stats.increment_shot()
                 shoot = True
             if event.key == pygame.K_q:
+                stats.increment_grenade()
                 grenade = True
             if event.key == pygame.K_w and player.alive:
+                stats.increment_jump()
                 player.jump = True
             if event.key == pygame.K_ESCAPE:
                 run = False
+                stats.save_stats()
             
         #keivoard button realesed
         if event.type == pygame.KEYUP:
