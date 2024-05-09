@@ -22,7 +22,7 @@ star_intro = False
 
 #set framerate
 clock = pygame.time.Clock()
-FPS = 90
+FPS = 60
 
 #define player action variables
 moving_left = False
