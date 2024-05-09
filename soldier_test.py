@@ -1,5 +1,6 @@
 import unittest
 from Soldier import Soldier
+from Bullet import Bullet
 import pygame
 from GameConstants import *
 
