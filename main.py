@@ -7,6 +7,7 @@ from ItemBox import ItemBox
 from HealthBar import HealthBar
 from World import World
 from Button import Button
+from Fade import ScreenFade
 
 pygame.init()
 
@@ -15,6 +16,7 @@ pygame.display.set_caption('Platformer Shooter')
 
 #switch between screens variable
 start_game = False
+star_intro = False
 
 #set framerate
 clock = pygame.time.Clock()
@@ -76,6 +78,10 @@ def reset_level():
 
     return data
 
+#create screen fades
+intro_fade = ScreenFade(1, BLACK, 12)
+death_fade = ScreenFade(2, RED, 6)
+
 #create buttons
 start_button = Button(SCREEN_WIDTH // 2 - 130, SCREEN_HEIGHT // 2 - 150, start_img, 1)
 exit_button = Button(SCREEN_WIDTH // 2 - 110, SCREEN_HEIGHT // 2 + 50, exit_img, 1)
@@ -118,6 +124,7 @@ while run:
         screen.fill(BG)
         if start_button.draw(screen):
             start_game = True
+            star_intro = True
         if exit_button.draw(screen):
             run = False
     else:
@@ -136,7 +143,11 @@ while run:
         for x in range(player.grenades):
             screen.blit(grenade_img, (135 + (x * 15), 60))
 
-
+        #show intro
+        if star_intro == True:
+            if intro_fade.fade(screen):
+                star_intro = False
+                intro_fade.fade_counter = 0
         #update player actions
         if player.alive:
             #shoot bullets
@@ -157,19 +168,37 @@ while run:
                 player.update_action(0)#0: idle
             SCREEN_SCROLL, level_complete = player.move(moving_left, moving_right)
             BG_SCROLL -= SCREEN_SCROLL
-        else:
-            SCREEN_SCROLL = 0
-            if restart_button.draw(screen):
+            #check if player has completed the level
+            if level_complete:
+                star_intro = True
+                LEVEL += 1
                 BG_SCROLL = 0
                 world_data = reset_level()
-                #load in level data and create world
-                with open(f'level{LEVEL}_data.csv', newline='') as csvfile:
-                    reader = csv.reader(csvfile, delimiter=',')
-                    for x, row in enumerate(reader):
-                        for y, tile in enumerate(row):
-                            world_data[x][y] = int(tile)
-                world = World()
-                player, health_bar = world.process_data(world_data, screen, bullet_group, water_group, decoration_group, enemy_group, item_box_group, exit_group)
+                if level_complete <= MAX_LEVELS:
+                    #load in level data and create world
+                    with open(f'level{LEVEL}_data.csv', newline='') as csvfile:
+                        reader = csv.reader(csvfile, delimiter=',')
+                        for x, row in enumerate(reader):
+                            for y, tile in enumerate(row):
+                                world_data[x][y] = int(tile)
+                    world = World()
+                    player, health_bar = world.process_data(world_data, screen, bullet_group, water_group, decoration_group, enemy_group, item_box_group, exit_group)
+        else:
+            SCREEN_SCROLL = 0
+            if death_fade.fade(screen):
+                if restart_button.draw(screen):
+                    death_fade.fade_counter = 0
+                    star_intro = True
+                    BG_SCROLL = 0
+                    world_data = reset_level()
+                    #load in level data and create world
+                    with open(f'level{LEVEL}_data.csv', newline='') as csvfile:
+                        reader = csv.reader(csvfile, delimiter=',')
+                        for x, row in enumerate(reader):
+                            for y, tile in enumerate(row):
+                                world_data[x][y] = int(tile)
+                    world = World()
+                    player, health_bar = world.process_data(world_data, screen, bullet_group, water_group, decoration_group, enemy_group, item_box_group, exit_group)
 
         player.update()
         player.draw(screen)
