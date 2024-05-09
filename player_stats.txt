@@ -1,3 +1,0 @@
-Jumps: 33
-Shots: 0
-Grenades thrown: 5

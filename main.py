@@ -1,5 +1,6 @@
 import pygame
 import csv
+import time
 from GameConstants import *
 from Soldier import Soldier
 from Grenade import Grenade
@@ -115,10 +116,11 @@ player, health_bar = world.process_data(world_data, screen, bullet_group, water_
 
 stats = PlayerStats('player_stats.txt')
 
+start_time = time.time()
+stats = PlayerStats("stats.txt")
 #game loop/events
 run = True
 while run:
-
     clock.tick(FPS)
 
     if start_game == False:
@@ -245,6 +247,7 @@ while run:
         #quit game
         if event.type == pygame.QUIT:
             run = False
+            stats.add_time_played(time.time() - start_time)
             stats.save_stats()
         #keyboard presses
         if event.type == pygame.KEYDOWN:
@@ -263,6 +266,7 @@ while run:
                 player.jump = True
             if event.key == pygame.K_ESCAPE:
                 run = False
+                stats.add_time_played(time.time() - start_time)
                 stats.save_stats()
             
         #keivoard button realesed
@@ -277,6 +281,11 @@ while run:
                 grenade = False
                 grenade_thrown = False
 
+    elapsed_time = time.time() - start_time
+    stats.add_time_played(elapsed_time)
+
+    #reset elapsed time
+    start_time = time.time()
 
     pygame.display.update()
 
