@@ -4,19 +4,21 @@ from Bullet import Bullet
 import pygame
 from GameConstants import *
 
+
 class TestSoldier(unittest.TestCase):
     def setUp(self):
         pygame.init()
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         self.bullet_group = pygame.sprite.Group()
         self.obstacle_list = []
-        self.soldier = Soldier('char_type', TILE_SIZE * 5, TILE_SIZE * 5, 1.65, SPEED, AMMO, GRENADES, self.bullet_group, self.screen, False, self.obstacle_list)
-
+        self.water_group = pygame.sprite.Group()
+        self.exit_group = pygame.sprite.Group()
+        self.soldier = Soldier('player', TILE_SIZE * 5, TILE_SIZE * 5, 1.65, SPEED, AMMO, GRENADES, self.bullet_group, self.screen, False, self.obstacle_list, self.water_group, self.exit_group)
 
     def test_init(self):
         self.assertIsInstance(self.soldier, pygame.sprite.Sprite)
-        self.assertEqual(self.soldier.char_type, 'char_type')
-        self.assertEqual(self.soldier.speed, 5)
+        self.assertEqual(self.soldier.char_type, 'player')
+        self.assertEqual(self.soldier._Soldier__speed, 5)
         self.assertEqual(self.soldier.ammo, 10)
         self.assertEqual(self.soldier.grenades, 5)
         self.assertEqual(self.soldier.health, 100)
@@ -37,13 +39,13 @@ class TestSoldier(unittest.TestCase):
         self.assertEqual(self.soldier.ammo, 9)
 
     def test_ai(self):
-        player = Soldier('char_type', 100, 100, 1, 5, 10, 5, self.bullet_group, self.screen, False, self.obstacle_list)
-        self.soldier.ai(player)
-        self.assertEqual(self.soldier.idling, True)
+        player = Soldier('player', 100, 100, 1, 5, 10, 5, self.bullet_group, self.screen, False, self.obstacle_list, self.water_group, self.exit_group)
+        self.soldier.ai(player, 0)
+        self.assertEqual(self.soldier.idling, False)
 
     def test_update_animation(self):
         self.soldier.update_animation()
-        self.assertEqual(self.soldier.frame_index, 1)
+        self.assertEqual(self.soldier.frame_index, 0)
 
     def test_update_action(self):
         self.soldier.update_action(1)
