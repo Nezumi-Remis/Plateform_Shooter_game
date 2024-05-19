@@ -114,10 +114,9 @@ with open(f'level{LEVEL}_data.csv', newline='') as csvfile:
 world = World()
 player, health_bar = world.process_data(world_data, screen, bullet_group, water_group, decoration_group, enemy_group, item_box_group, exit_group)
 
-stats = PlayerStats('player_stats.txt')
-
 start_time = time.time()
 stats = PlayerStats("stats.txt")
+
 #game loop/events
 run = True
 while run:
@@ -152,7 +151,8 @@ while run:
             if intro_fade.fade(screen):
                 star_intro = False
                 intro_fade.fade_counter = 0
-        #update player actions
+        
+        #if player is alive update actions
         if player.alive:
             #shoot bullets
             if shoot:
@@ -187,6 +187,7 @@ while run:
                                 world_data[x][y] = int(tile)
                     world = World()
                     player, health_bar = world.process_data(world_data, screen, bullet_group, water_group, decoration_group, enemy_group, item_box_group, exit_group)
+        #if player dies reset level
         else:
             SCREEN_SCROLL = 0
             if death_fade.fade(screen):
